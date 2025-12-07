@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tales of Eden – Codex</title>
+
+  <link rel="stylesheet" href="styles.css" />
+  <script src="theme-loader.js"></script>
+  <link rel="stylesheet" href="overlays.css" />
+  <script src="overlays.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: var(--font-ui, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+      background: radial-gradient(circle at top, var(--color-bg-main-top, #161d2a) 0, var(--color-bg-main-bottom, #05060a) 55%);
+      color: var(--color-text-main, #e9f1ff);
+    }
+
+    .codex-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header.codex-top {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      z-index: 10;
+    }
+
+    .codex-top-left,
+    .codex-top-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .codex-title {
+      font-size: 14px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(223,235,255,0.9);
+    }
+
+    .codex-search {
+      width: 260px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(6,12,20,0.9);
+      color: var(--color-text-main);
+      padding: 6px 12px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .codex-search::placeholder {
+      color: rgba(155,166,195,0.7);
+    }
+
+    .codex-btn {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(6,12,20,0.9);
+      color: var(--color-text-main);
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.10s ease,
+        box-shadow 0.15s ease;
+    }
+
+    .codex-btn:hover {
+      background: rgba(22,40,72,0.98);
+      border-color: var(--color-accent, #4ea1ff);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.16);
+      transform: translateY(-1px);
+    }
+
+    main.codex-main {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+
+    .codex-list-panel {
+      width: 320px;
+      max-width: 40%;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      background: radial-gradient(circle at top left, rgba(18,26,46,0.9), rgba(4,6,12,0.96));
+      padding: 10px 0 12px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .codex-category-row {
+      padding: 0 10px 6px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .codex-cat-pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(6,12,20,0.85);
+      font-size: 11px;
+      color: rgba(223,235,255,0.9);
+      cursor: pointer;
+      white-space: nowrap;
+      transition:
+        background 0.12s ease,
+        border-color 0.12s ease,
+        box-shadow 0.12s ease,
+        transform 0.08s ease;
+    }
+
+    .codex-cat-pill:hover {
+      background: rgba(34,52,88,0.98);
+      border-color: rgba(255,255,255,0.34);
+      transform: translateY(-1px);
+    }
+
+    .codex-cat-pill.active {
+      background: rgba(80,118,188,0.98);
+      border-color: var(--color-accent, #4ea1ff);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.18);
+    }
+
+    .codex-list {
+      list-style: none;
+      margin: 0;
+      padding: 4px 0 0;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .codex-item {
+      padding: 7px 16px 7px 22px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      font-size: 13px;
+      color: rgba(223,235,255,0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .codex-item-title {
+      font-weight: 500;
+    }
+
+    .codex-item-meta {
+      font-size: 11px;
+      color: rgba(155,166,195,0.8);
+    }
+
+    .codex-item:hover {
+      background: radial-gradient(circle at left, rgba(46,62,102,0.6), rgba(4,6,12,0.96));
+      border-left-color: rgba(111,191,255,0.9);
+    }
+
+    .codex-item.active {
+      background: radial-gradient(circle at left, rgba(84,118,187,0.9), rgba(4,6,12,0.96));
+      border-left-color: var(--color-accent, #4ea1ff);
+    }
+
+    .codex-detail-panel {
+      flex: 1;
+      padding: 24px 40px 40px;
+      overflow-y: auto;
+    }
+
+    .codex-detail-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .codex-detail-meta {
+      font-size: 12px;
+      color: rgba(155,166,195,0.9);
+      margin-bottom: 16px;
+    }
+
+    .codex-detail-body p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .codex-section-title {
+      margin-top: 28px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: rgba(155,166,195,0.9);
+    }
+
+    .codex-appears {
+      font-size: 13px;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .codex-appears li {
+      margin-bottom: 4px;
+    }
+
+    .codex-appears a {
+      color: var(--color-accent, #9ad0ff);
+      text-decoration: none;
+    }
+
+    .codex-appears a:hover {
+      text-decoration: underline;
+    }
+
+    .codex-empty {
+      font-size: 13px;
+      color: rgba(155,166,195,0.9);
+    }
+
+    @media (max-width: 900px) {
+      header.codex-top {
+        padding: 0 16px;
+      }
+      .codex-search {
+        width: 180px;
+      }
+      main.codex-main {
+        flex-direction: column;
+      }
+      .codex-list-panel {
+        width: 100%;
+        max-width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        max-height: 260px;
+      }
+      .codex-detail-panel {
+        padding: 16px 16px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="codex-shell">
+    <header class="codex-top">
+      <div class="codex-top-left">
+        <a href="index.html" class="codex-btn">← Library</a>
+        <div class="codex-title">Codex</div>
+      </div>
+
+      <div class="codex-top-right">
+        <input
+          id="searchInput"
+          type="search"
+          class="codex-search"
+          placeholder="Search Codex..."
+        />
+      </div>
+    </header>
+
+    <main class="codex-main">
+      <section class="codex-list-panel">
+        <div id="categoryRow" class="codex-category-row"></div>
+        <ul id="codexList" class="codex-list"></ul>
+      </section>
+
+      <section class="codex-detail-panel" id="codexDetail">
+        <div class="codex-empty">
+          Select a Codex entry on the left, or search by name or category.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const CODEX_JSON = "Codex/codex.json";
+      const REFS_JSON  = "Codex/references.json";
+      const BOOKS_JSON = "books.json";
+
+      const listEl      = document.getElementById("codexList");
+      const detailEl    = document.getElementById("codexDetail");
+      const searchEl    = document.getElementById("searchInput");
+      const categoryRow = document.getElementById("categoryRow");
+
+      let entries       = [];
+      let refsMap       = {};
+      let booksMap      = {};
+      let activeId      = null;
+
+      let categories    = [];
+      let activeCategory = "All";
+
+      function fetchJson(url, fallback) {
+        return fetch(url)
+          .then(r => {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          })
+          .catch(err => {
+            console.warn("[codex] Failed to load", url, err);
+            return fallback;
+          });
+      }
+
+      function buildBooksMap(list) {
+        const map = {};
+        (list || []).forEach(b => {
+          if (b && b.id) {
+            map[b.id] = b;
+          }
+        });
+        return map;
+      }
+
+      function buildCategories() {
+        const set = new Set();
+        (entries || []).forEach(e => {
+          if (e.category) set.add(e.category);
+        });
+        const cats = Array.from(set).sort((a, b) => a.localeCompare(b));
+        categories = ["All", ...cats];
+        if (!categories.includes(activeCategory)) {
+          activeCategory = "All";
+        }
+      }
+
+      function renderCategories() {
+        categoryRow.innerHTML = "";
+        categories.forEach(cat => {
+          const btn = document.createElement("button");
+          btn.type  = "button";
+          btn.className = "codex-cat-pill" + (cat === activeCategory ? " active" : "");
+          btn.textContent = cat;
+          btn.addEventListener("click", () => {
+            activeCategory = cat;
+            renderCategories();
+            renderList(searchEl ? searchEl.value : "");
+          });
+          categoryRow.appendChild(btn);
+        });
+      }
+
+      function renderList(filterText) {
+        if (!listEl) return;
+
+        const q = (filterText || "").toLowerCase().trim();
+
+        const filtered = entries.filter(e => {
+          // category filter
+          if (activeCategory !== "All") {
+            if (!e.category || e.category !== activeCategory) {
+              return false;
+            }
+          }
+
+          if (!q) return true;
+
+          const hay = [
+            e.title || "",
+            e.category || "",
+            e.universe || "",
+            (e.tags || []).join(" ")
+          ].join(" ").toLowerCase();
+
+          return hay.includes(q);
+        });
+
+        listEl.innerHTML = "";
+
+        filtered.forEach(entry => {
+          const li = document.createElement("li");
+          li.className = "codex-item";
+          li.dataset.id = entry.id;
+
+          if (entry.id === activeId) {
+            li.classList.add("active");
+          }
+
+          const title = document.createElement("div");
+          title.className = "codex-item-title";
+          title.textContent = entry.title || entry.id || "(untitled)";
+
+          const meta = document.createElement("div");
+          meta.className = "codex-item-meta";
+          const parts = [];
+          if (entry.category) parts.push(entry.category);
+          if (entry.universe) parts.push(entry.universe);
+          meta.textContent = parts.join(" · ");
+
+          li.appendChild(title);
+          li.appendChild(meta);
+
+          li.addEventListener("click", () => {
+            selectEntry(entry.id);
+          });
+
+          listEl.appendChild(li);
+        });
+
+        if (!filtered.length) {
+          const li = document.createElement("li");
+          li.className = "codex-item";
+          li.textContent = "No entries match your filters.";
+          listEl.appendChild(li);
+        }
+      }
+
+      function clearActiveListItem() {
+        const items = listEl.querySelectorAll(".codex-item.active");
+        items.forEach(i => i.classList.remove("active"));
+      }
+
+      function markActiveListItem(id) {
+        clearActiveListItem();
+        const node = listEl.querySelector('.codex-item[data-id="' + id + '"]');
+        if (node) node.classList.add("active");
+      }
+
+      function makeReaderLink(ref) {
+        const book = booksMap[ref.bookId];
+        let readerUrl = "";
+        if (book && book.path) {
+          const dir = book.path.replace(/\/index\.html$/i, "");
+          readerUrl = dir + "/reader.html?p=" + ref.page;
+        } else {
+          // fallback guess
+          readerUrl = "Books/" + (ref.bookId || "").toLowerCase() + "/reader.html?p=" + ref.page;
+        }
+        return readerUrl;
+      }
+
+      function renderDetail(entry) {
+        if (!detailEl) return;
+
+        if (!entry) {
+          detailEl.innerHTML = "<div class='codex-empty'>Select a Codex entry on the left.</div>";
+          return;
+        }
+
+        const title    = entry.title || entry.id || "(Untitled)";
+        const category = entry.category || "Codex";
+        const universe = entry.universe;
+
+        const bodyParts = [];
+        if (entry.summary) bodyParts.push(entry.summary);
+        if (Array.isArray(entry.body)) {
+          entry.body.forEach(p => bodyParts.push(p));
+        }
+
+        const refs = refsMap[entry.id] || [];
+
+        let html = "";
+
+        html += "<div class='codex-detail-title'>" + title + "</div>";
+        html += "<div class='codex-detail-meta'>";
+        html += category;
+        if (universe) {
+          html += " · " + universe;
+        }
+        html += "</div>";
+
+        html += "<div class='codex-detail-body'>";
+        if (bodyParts.length) {
+          bodyParts.forEach(p => {
+            html += "<p>" + p + "</p>";
+          });
+        } else {
+          html += "<p>No description available.</p>";
+        }
+        html += "</div>";
+
+        // ---- Appears in (grouped by book) ----
+        html += "<div class='codex-section-title'>Appears in</div>";
+        if (!refs.length) {
+          html += "<div class='codex-empty'>This entry is not referenced in any book yet.</div>";
+        } else {
+          // group by bookId so each book appears only once
+          const perBook = {};
+          refs.forEach(ref => {
+            const key = ref.bookId || ref.bookTitle || "unknown";
+            const existing = perBook[key];
+            if (!existing) {
+              perBook[key] = {
+                bookId: ref.bookId,
+                bookTitle: ref.bookTitle,
+                page: ref.page
+              };
+            } else {
+              if (ref.page && ref.page < existing.page) {
+                existing.page = ref.page;
+              }
+            }
+          });
+
+          const perBookList = Object.values(perBook).sort((a, b) => {
+            const ta = (a.bookTitle || a.bookId || "").toLowerCase();
+            const tb = (b.bookTitle || b.bookId || "").toLowerCase();
+            return ta.localeCompare(tb);
+          });
+
+          html += "<ul class='codex-appears'>";
+          perBookList.forEach(ref => {
+            const readerUrl = makeReaderLink(ref);
+            const label = ref.bookTitle || ref.bookId || "Unknown book";
+            html += "<li><a href='" + readerUrl + "'>" + label + "</a></li>";
+          });
+          html += "</ul>";
+        }
+
+        detailEl.innerHTML = html;
+      }
+
+      function selectEntry(id) {
+        const entry = entries.find(e => e.id === id);
+        if (!entry) return;
+        activeId = id;
+        markActiveListItem(id);
+        renderDetail(entry);
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("id", id);
+        url.searchParams.delete("q");
+        window.history.replaceState(null, "", url.toString());
+      }
+
+      function initSearch() {
+        if (!searchEl) return;
+        searchEl.addEventListener("input", () => {
+          const q = searchEl.value;
+          renderList(q);
+        });
+      }
+
+      function initDeepLink() {
+        const params = new URLSearchParams(window.location.search);
+        const idParam = params.get("id");
+        const qParam  = params.get("q");
+
+        if (qParam && searchEl) {
+          searchEl.value = qParam;
+        }
+
+        renderCategories();
+        renderList(searchEl ? searchEl.value : "");
+
+        if (idParam) {
+          const found = entries.find(e => e.id === idParam);
+          if (found) {
+            // Make sure the active category includes this entry (or set to All)
+            if (activeCategory !== "All" && found.category && found.category !== activeCategory) {
+              activeCategory = "All";
+              renderCategories();
+              renderList(searchEl ? searchEl.value : "");
+            }
+            selectEntry(idParam);
+            return;
+          }
+        }
+
+        const q = (searchEl && searchEl.value) ? searchEl.value.toLowerCase().trim() : "";
+        if (q) {
+          const firstMatch = entries.find(e => {
+            if (activeCategory !== "All" && e.category !== activeCategory) return false;
+            const hay = [
+              e.title || "",
+              e.category || "",
+              e.universe || "",
+              (e.tags || []).join(" ")
+            ].join(" ").toLowerCase();
+            return hay.includes(q);
+          });
+          if (firstMatch) {
+            selectEntry(firstMatch.id);
+            return;
+          }
+        }
+
+        renderDetail(null);
+      }
+
+      Promise.all([
+        fetchJson(CODEX_JSON, []),
+        fetchJson(REFS_JSON, {}),
+        fetchJson(BOOKS_JSON, [])
+      ]).then(([codexData, refsData, booksData]) => {
+        entries = (codexData || []).slice().sort((a, b) => {
+          const ta = (a.title || a.id || "").toLowerCase();
+          const tb = (b.title || b.id || "").toLowerCase();
+          return ta.localeCompare(tb);
+        });
+        refsMap  = refsData || {};
+        booksMap = buildBooksMap(booksData || []);
+
+        buildCategories();
+        renderCategories();
+        initSearch();
+        initDeepLink();
+      });
+    })();
+  </script>
+</body>
+</html>

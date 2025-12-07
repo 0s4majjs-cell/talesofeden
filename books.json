@@ -1,0 +1,32 @@
+[
+  {
+    "id": "Alexander",
+    "title": "Alexander Colt",
+    "author": "0S4MA",
+    "genre": "Adventure",
+    "type": "Novel",
+    "description": "Alexander Colt has spent his whole life inside the Berlin Safe Zone: ration lines, crackling speakers, concrete ceilings and the same recorded voice every morning. The walls that protect him from the ruined world also cage him in, and one quiet morning the realization lands like a verdict: He can’t do this for another twenty years. With a patched bag, a handful of hoarded rations and a stolen maintenance override, Alexander does the one thing you’re never meant to do—he rides the elevator to the top of the wall and finds a way down the other side. The wasteland doesn’t greet him like an adventure. It meets him with broken cities, killing cold and the kind of silence that swallows people whole. By the end of his first day outside, he’s bleeding in the snow, too exhausted to stand… and that should have been the end of his story. Instead, it’s where Karl Ottermand finds him. Karl is a former SED-4 extermination specialist who walked away from the Safe Zones years ago. With only his dog, Viggo, at his side, he’s carved out a fragile life in the ruins. Taking in a foolish runaway from Berlin is the last thing he needs—but for reasons he doesn’t name, he gives Alexander a choice: Learn to fight, hunt and think like someone who wants to stay alive… or die the way most dreamers do—cold and unprepared. This first part of the novel follows Alexander’s escape, near-death and uneasy rescue, as he trades the numb safety of walls for a brutal apprenticeship in the dead world beyond them—and begins to turn his lifelong dream of “being in a story” into something that might actually keep him breathing.",
+    "path": "Books/alexander/index.html",
+    "totalPages": 206
+  },
+  {
+    "id": "Anomalies",
+    "title": "Anomalies",
+    "author": "Eden Team",
+    "genre": "Documentation",
+    "type": "Guidebook",
+    "description": "A comprehensive guidebook detailing the various anomalies encountered within the Eden universe, including their origins, characteristics, and effects on the environment and inhabitants.",
+    "path": "Books/anomalies/index.html",
+    "totalPages": 12
+  },
+  {
+    "id": "PodThief",
+    "title": "The Pod Thief",
+    "author": "Cman",
+    "genre": "Romance",
+    "type": "Novel",
+    "description": "Following the adventures and emotional journey of a daring pod thief as they navigate love, danger, and self-discovery alongside Viktor.",
+    "path": "Books/podthief/index.html",
+    "totalPages": 25
+  }
+]

@@ -1,0 +1,121 @@
+/* overlays.css
+ *
+ * Visual overlays for Tales of Eden.
+ * We support two layers:
+ *  - Background overlay: behind everything
+ *  - Top overlay: on top of everything, but non-interactive
+ *
+ * Types:
+ *  Background: none | snow | dust | fire
+ *  Top:        none | scanlines | grain
+ */
+
+.overlay-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Background overlay sits behind the app */
+#overlay-bg {
+  z-index: 0;
+}
+
+/* Top overlay sits above everything (but still non-interactive) */
+#overlay-top {
+  z-index: 9999;
+}
+
+/* defaults */
+.overlay-bg-none {
+  background: none;
+}
+
+.overlay-top-none {
+  background: none;
+}
+
+/* ========== BACKGROUND OVERLAYS ========== */
+
+/* 1) Snow: soft drifting flakes */
+.overlay-bg-snow {
+  background-image: url("overlays/snow.png"); /* transparent PNG with small white dots */
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  opacity: 0.55;
+  animation: overlay-snow-drift 30s linear infinite;
+}
+
+@keyframes overlay-snow-drift {
+  0%   { background-position: 0 0; }
+  50%  { background-position: -150px 300px; }
+  100% { background-position: 0 0; }
+}
+
+/* 2) Dust / fog: slow subtle movement */
+.overlay-bg-dust {
+  background-image: url("overlays/dust.png"); /* soft, cloudy texture */
+  background-repeat: repeat;
+  background-size: 512px 512px;
+  mix-blend-mode: screen;
+  opacity: 0.28;
+  animation: overlay-dust-move 40s linear infinite;
+}
+
+@keyframes overlay-dust-move {
+  0%   { transform: translate3d(0,0,0); }
+  25%  { transform: translate3d(-20px, 10px, 0); }
+  50%  { transform: translate3d(10px, -10px, 0); }
+  75%  { transform: translate3d(-10px, 5px, 0); }
+  100% { transform: translate3d(0,0,0); }
+}
+
+/* 3) Fire: uses a <video> element in #overlay-bg
+   The CSS here is mostly fallback + slight tint. */
+.overlay-bg-fire {
+  background-color: #040101;
+  mix-blend-mode: screen;
+}
+
+/* The actual fire video inside overlay-bg */
+#overlay-bg .overlay-fire-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  filter: brightness(1.1);
+}
+
+/* ========== TOP OVERLAYS ========== */
+
+/* 4) Scanlines: CRT-ish feel, subtle */
+.overlay-top-scanlines {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.06) 1px,
+    rgba(0,0,0,0) 3px
+  );
+  background-size: 100% 4px;
+  mix-blend-mode: soft-light;
+  opacity: 0.22;
+}
+
+/* 5) Grain: jittery film grain */
+.overlay-top-grain {
+  background-image: url("overlays/grain.png"); /* noisy tile, transparent PNG */
+  background-repeat: repeat;
+  background-size: 220px 220px;
+  mix-blend-mode: soft-light;
+  opacity: 0.20;
+  animation: overlay-grain-jitter 0.55s steps(2) infinite;
+}
+
+@keyframes overlay-grain-jitter {
+  0%   { transform: translate3d(0,0,0); }
+  25%  { transform: translate3d(-4px, 2px, 0); }
+  50%  { transform: translate3d(3px, -3px, 0); }
+  75%  { transform: translate3d(-2px, 1px, 0); }
+  100% { transform: translate3d(0,0,0); }
+}
